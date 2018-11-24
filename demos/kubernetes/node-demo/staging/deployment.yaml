@@ -2,12 +2,13 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: devops-demo
+  name: devops-demo-staging
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.devops-demo: "glob:*"
   labels:
     app: devops-demo
+    environment: staging
 spec:
   strategy:
     rollingUpdate:
@@ -18,9 +19,8 @@ spec:
     metadata:
       labels:
         app: devops-demo
+        environment: staging
     spec:
-      imagePullSecrets:
-      - name: registrypullsecret
       containers:
       - image: gcr.io/devops-hof/node-demo:9bef48a5a3d473dfb115f1beb89f82c17390064c
         name: devops-demo

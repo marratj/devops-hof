@@ -5,15 +5,16 @@ metadata:
     kubernetes.io/ingress.class: nginx
   labels:
     app: devops-demo
+    environment: staging
   name: devops-demo-ingress
 spec:
   rules:
     -
-      host: devops-hof.marrat.de
+      host: staging.devops-hof.marrat.de
       http:
         paths:
           -
             backend:
-              serviceName: devops-demo
+              serviceName: devops-demo-staging
               servicePort: 3000
             path: /

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata: 
+  labels: 
+    app: devops-demo-staging
+    environment: staging
+  name: devops-demo
+spec: 
+  ports: 
+    - 
+      name: nodejs
+      port: 3000
+      targetPort: 3000
+  selector: 
+    app: devops-demo
+    environment: staging
+  type: ClusterIP

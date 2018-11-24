@@ -1,0 +1,34 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: devops-demo-prod
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.devops-demo: "glob:prod-"
+  labels:
+    app: devops-demo
+    environment: prod
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: devops-demo
+        environment: prod
+    spec:
+      containers:
+      - image: gcr.io/devops-hof/node-demo:prod-9bef48a5a3d473dfb115f1beb89f82c17390064c
+        name: devops-demo
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "200Mi"
+        ports:
+        - containerPort: 3000
+          name: nodejs
+      restartPolicy: Always
