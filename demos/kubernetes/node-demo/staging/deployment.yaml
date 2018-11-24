@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: devops-demo-staging
   annotations:
-    flux.weave.works/automated: "false"
+    flux.weave.works/automated: "true"
     flux.weave.works/tag.devops-demo: "glob:*"
   labels:
     app: devops-demo
