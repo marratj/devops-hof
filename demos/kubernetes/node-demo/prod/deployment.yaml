@@ -5,7 +5,7 @@ metadata:
   name: devops-demo-prod
   annotations:
     flux.weave.works/automated: "true"
-    flux.weave.works/tag.devops-demo: "glob:prod-"
+    flux.weave.works/tag.devops-demo: "glob:prod-*"
   labels:
     app: devops-demo
     environment: prod
