@@ -1,0 +1,34 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: devops-demo
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.devops-demo: "glob:*"
+  labels:
+    app: devops-demo
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: devops-demo
+    spec:
+      imagePullSecrets:
+      - name: registrypullsecret
+      containers:
+      - image: gcr.io/devops-hof/node-demo
+        name: devops-demo
+        resources:
+          limits:
+            cpu: "100m"
+            memory: "200Mi"
+        ports:
+        - containerPort: 80
+          name: nodejs
+      restartPolicy: Always

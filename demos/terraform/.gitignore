@@ -1,0 +1,4 @@
+state.tf
+tfplan
+kubeconfig
+.terraform/
