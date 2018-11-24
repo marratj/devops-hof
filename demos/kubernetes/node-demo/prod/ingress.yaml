@@ -6,7 +6,7 @@ metadata:
   labels:
     app: devops-demo
     environment: prod
-  name: devops-demo-ingress
+  name: devops-demo
 spec:
   rules:
     -
