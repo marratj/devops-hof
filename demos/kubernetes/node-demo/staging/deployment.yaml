@@ -22,7 +22,7 @@ spec:
         environment: staging
     spec:
       containers:
-      - image: gcr.io/devops-hof/node-demo:0f20fa09f004dc545396ea87237219dfe4074034
+      - image: gcr.io/devops-hof/node-demo:7782d8a1804661b1fac8b4dce9ad2d4e62e77424
         name: devops-demo
         resources:
           limits:
