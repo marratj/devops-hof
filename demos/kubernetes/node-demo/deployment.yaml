@@ -22,7 +22,7 @@ spec:
       imagePullSecrets:
       - name: registrypullsecret
       containers:
-      - image: gcr.io/devops-hof/node-demo:9bef48a5a3d473dfb115f1beb89f82c17390064c
+      - image: gcr.io/devops-hof/node-demo:1f7ebd804af2aa0d65c9917df8d7cbd1499f7cd2
         name: devops-demo
         resources:
           limits:
