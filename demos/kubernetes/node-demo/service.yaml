@@ -9,7 +9,7 @@ spec:
     - 
       name: nodejs
       port: 3000
-      targetPort: 80
+      targetPort: 3000
   selector: 
     app: devops-demo
   type: ClusterIP
