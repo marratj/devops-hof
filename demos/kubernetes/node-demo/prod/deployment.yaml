@@ -22,7 +22,7 @@ spec:
         environment: prod
     spec:
       containers:
-      - image: gcr.io/devops-hof/node-demo:prod-62d37a8fb2cc274deb62a78925083e67b1c7d076
+      - image: gcr.io/devops-hof/node-demo:prod-d5615cc199b0d14d3f1f339c91881f84bc7aa326
         name: devops-demo
         resources:
           limits:
