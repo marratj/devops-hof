@@ -4,6 +4,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
+    certmanager.k8s.io/issuer: letsencrypt-prod
   labels:
     app: devops-demo
     environment: staging
