@@ -12,7 +12,7 @@ metadata:
 spec:
   rules:
     -
-      host: devops-hof.marrat.de
+      host: devops-hof.de
       http:
         paths:
           -
@@ -23,5 +23,5 @@ spec:
   tls:
     -
       hosts:
-        - staging.devops-hof.de
-      secretName: staging.devops-hof.de
+        - devops-hof.de
+      secretName: devops-hof.de
