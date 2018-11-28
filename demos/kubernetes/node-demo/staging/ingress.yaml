@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
   labels:
     app: devops-demo
     environment: staging
@@ -10,7 +11,7 @@ metadata:
 spec:
   rules:
     -
-      host: staging.devops-hof.marrat.de
+      host: staging.devops-hof.de
       http:
         paths:
           -
@@ -18,3 +19,8 @@ spec:
               serviceName: devops-demo-staging
               servicePort: 3000
             path: /
+  tls:
+    -
+      hosts:
+        - staging.devops-hof.de
+      secretName: staging.devops-hof.de
