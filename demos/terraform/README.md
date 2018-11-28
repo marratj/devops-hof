@@ -12,7 +12,7 @@ gsutil mb -p $PROJECT -l $LOCATION gs://$BUCKET_NAME/
 
 ## Set Kubeconfig path for generated Cluster
 ```
-export KUBECONFIG=kubeconfig
+export KUBECONFIG=$(pwd)/kubeconfig
 ```
 
 ## Configure Terraform Backend
