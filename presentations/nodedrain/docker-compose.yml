@@ -1,0 +1,7 @@
+version: "3"
+services:
+  reveal:
+    build: .
+    ports:
+      - 1948:1948
+    

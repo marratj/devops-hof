@@ -6,11 +6,11 @@ ENV PATH=$PATH:/home/node/.npm-global/bin
 
 USER node
 
-COPY . /home/node/app
-
 WORKDIR /home/node/app
 
 RUN npm install -g reveal-md
+
+COPY . /home/node/app
 
 ENTRYPOINT ["reveal-md"]
 
