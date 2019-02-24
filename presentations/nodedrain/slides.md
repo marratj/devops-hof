@@ -147,6 +147,7 @@ spec:
 
 <p class="footnote">https://github.com/kubernetes/kubernetes/blob/139a13d312b1b11de7f3af63d9503365ff3a1e6a/pkg/proxy/healthcheck/healthcheck.go#L212</p>
 
+<p class="footnote">https://github.com/kubernetes/kubernetes/blob/1c557b9ce866d67ec6088f37058e8594b89606ee/pkg/cloudprovider/providers/gce/gce_loadbalancer_external.go#L209</p>
 
 ----
 Which exactly leads to this situation
