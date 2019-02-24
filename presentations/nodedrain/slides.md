@@ -9,9 +9,13 @@
 
 #### SRE @ karrieretutor.de
 
-----
+---
 
-## Easy migrations
+### Easy migrations & failover
+
+# Yeah!
+
+----
 
 #### Scheduler 
 controls Pod placement
@@ -28,20 +32,23 @@ controls Pod placement
 
 #### before
 
-<img src="images/before.svg" height="500px" />
+<img src="images/nodedrain-before.svg" height="500px" />
 
 ----
 #### added second node pool
 
-<img src="images/secondpool.svg" height="500px" />
+<img src="images/nodedrain-secondpool.svg" height="500px" />
 
 ----
 #### `kubectl drain`
 
-<img src="images/after.svg" height="500px" /> 
+<img src="images/nodedrain-after_blown.svg" height="500px" /> 
 <div class="what">???</div>
 
 ----
+No more traffic reached the ingress-nginx Pods
+
+---
 After `kubectl drain` cordoned the old nodes, the Kubernetes Service Controller
 
 * added the new nodes to the GCP Load Balancer backend config
@@ -101,25 +108,22 @@ However, this shouldn't be a problem.
 
 No more traffic reached the ingress-nginx Pods
 
-
 ---
 ### `kube-proxy`
 
-Our situation
+This is what normally happens:
 
-<img src="images/after.svg" height="500px" />
+<img src="images/nodedrain-kube-proxy.svg" height="500px" />
 
-----
-### `kube-proxy`
-
-This happens normally:
-
-<img src="images/kube-proxy.svg" height="500px" />
-
+Note: kube-proxy transparently forwards service traffic to the correct node(s) where the Pods are running.
 ----
 However, it didn't in our case.
 
 ---
+# But why not?
+
+----
+Service definition:
 
 ```yaml
 kind: Service
@@ -136,12 +140,13 @@ spec:
 ```
 
 ----
+externalTrafficPolicy
+
 ```yaml
 spec:
   externalTrafficPolicy: Local
 ```
-
-> <p class="footnote">However, if you’re running on Google Kubernetes Engine/GCE, setting the same service.spec.externalTrafficPolicy field to Local forces nodes without Service endpoints to remove themselves from the list of nodes eligible for loadbalanced traffic by deliberately failing health checks.</p>
+> <p class="footnote">Packets sent to Services with Type=LoadBalancer are source NAT’d by default, because all schedulable Kubernetes nodes in the Ready state are eligible for loadbalanced traffic. So if packets arrive at a node without an endpoint, the system proxies it to a node with an endpoint, replacing the source IP on the packet with the IP of the node.</p><p class="footnote">Setting service.spec.externalTrafficPolicy field to Local forces nodes without Service endpoints to remove themselves from the list of nodes eligible for loadbalanced traffic by deliberately failing health checks.</p>
 
 <p class="footnote">https://kubernetes.io/docs/tutorials/services/source-ip/#source-ip-for-services-with-type-loadbalancer</p>
 
@@ -149,20 +154,42 @@ spec:
 
 <p class="footnote">https://github.com/kubernetes/kubernetes/blob/1c557b9ce866d67ec6088f37058e8594b89606ee/pkg/cloudprovider/providers/gce/gce_loadbalancer_external.go#L209</p>
 
+Note: this feature is especially helpful in ingress-nginx's case, because without it, log entries would only show other nodes' IP addresses as source, instead of the real client IP.
 ----
-Which exactly leads to this situation
+Which leads to this situation
 
-<img src="images/secondpool.svg" height="500px" /> 
+<img src="images/nodedrain-secondpool_healthz.svg" height="500px" /> 
 
 ----
 And after cordoning the nodes to this
 
-<img src="images/after_blown.svg" height="500px" /> 
+<img src="images/nodedrain-after_blown_healthz.svg" height="500px" /> 
 
 ---
 
-## Second slide
+### Obvious solution
 
-> Best quote ever.
+The drain operation was stalled due to misconfigured disruption budgets on our side (we didn't need them, they were kept from the Helm chart's default).
 
-Note: speaker notes FTW!
+----
+Delete ingress-nginx Pods on the cordoned nodes.
+
+<img src="images/nodedrain-delete_pods.svg" height="500px" /> 
+
+----
+They get automatically recreated on the `Ready` nodes:
+
+<img src="images/nodedrain-recreate_pods.svg" height="500px" /> 
+
+---
+# Bottom Line
+
+----
+* Check your service definitions twice (or thrice!)
+* Don't drain all nodes at once 
+  * -> we would have catched the error in time
+* Observe the behavior of your system
+
+---
+
+## Thank you for your time!
