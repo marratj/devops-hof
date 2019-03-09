@@ -5,7 +5,7 @@
 
 ----
 
-## Marcel Juhnke
+## Marcel D. Juhnke
 
 #### SRE @ karrieretutor.de
 
