@@ -35,7 +35,7 @@ You usually don't manually want to
 
 ---
 
-## Core Task --> Scheduling Pods (Containers)
+## Core Task -> Scheduling Pods (Containers)
 
 ----
 
@@ -93,6 +93,12 @@ Run workloads (obviously)
 
 ----
 
+* Smallest deployable object
+* Single application instance per Pod
+* For multiple instances -> create multiple identical Pods
+
+----
+
 <img class="center" src="images/pod.svg" />
 
 
@@ -117,7 +123,7 @@ Decides where to place Pods based on their specs
 ## Deployments
 
 * Declarative updates/rollbacks for Pods
-* Manages ReplicaSets
+* Manages ReplicaSets -> identical Pods
 
 ----
 
