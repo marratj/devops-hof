@@ -39,6 +39,8 @@ You usually don't manually want to
 
 ----
 
+#### A Kubernetes Cluster consists of
+
 * Master node(s)
 * Worker nodes
 
@@ -109,7 +111,7 @@ Run workloads (obviously)
 <img class="center" src="images/pods.svg" />
 
 
-----
+---
 
 ## Scheduler
 
