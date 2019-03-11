@@ -1,5 +1,5 @@
 ---
-title: Foobar
+title: Kubernetes Basics
 revealOptions:
     transition: 'fade'
 
@@ -88,13 +88,15 @@ Run workloads (obviously)
 
 * Core object
 * Everything revolves around Pods
-* Contains one or more containers
-* Containers share volumes and network namespace
+* Smallest deployable object
 
 ----
 
-* Smallest deployable object
+## Pods
+
 * Single application instance per Pod
+* Contains one or more containers
+* Containers share volumes and network namespace
 * For multiple instances -> create multiple identical Pods
 
 ----
