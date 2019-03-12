@@ -110,6 +110,95 @@ Run workloads (obviously)
 
 <img class="center" src="images/pods.svg" />
 
+----
+
+```yaml
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.7.9
+    ports:
+    - containerPort: 80
+      name: http
+  - name: wordpress
+    image: wordpress:5.1
+    ports:
+    - containerPort: 9000
+      name: php-fpm
+```
+
+----
+
+## Volumes
+
+* Ephemeral Volumes
+* Persistent Volumes
+* ConfigMaps
+* Secrets
+
+----
+
+<img class="center" src="images/persistent_volume.svg" />
+
+
+----
+
+<img class="center" src="images/configmap_volume.svg" />
+
+----
+
+## ConfigMap
+
+```yaml
+apiVersion: v1
+data:
+  backend.properties: |
+    secret.code.allowed=true
+    secret.code.lives=30
+  ui.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true
+    how.nice.to.look=fairlyNice
+kind: ConfigMap
+metadata:
+  name: webapp-config
+  namespace: default
+
+```
+----
+
+<img class="center" src="images/secret_volume.svg" />
+
+----
+
+```yaml
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  volumes:
+  - name: config-volume
+    configMap: 
+      name: webapp-config
+  containers:
+  - name: nginx
+    image: nginx:1.7.9
+    ports:
+    - containerPort: 80
+    volumeMounts:
+      - name: config-volume
+        mountPath: /etc/webapp
+```
 
 ---
 
@@ -149,6 +238,36 @@ Decides where to place Pods based on their specs
 ----
 
 <img class="center" src="images/deployment_update4.svg" />
+
+----
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+          name: http
+      - name: wordpress
+        image: wordpress:5.1
+        ports:
+        - containerPort: 9000
+          name: php-fpm
+```
 
 ---
 
