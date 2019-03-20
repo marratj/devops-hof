@@ -1,61 +1,86 @@
-## Kubernetes Load Balancers 
+---
+title: Beware when draining nodes!
+revealOptions:
+    transition: 'fade'
+
+---
+
+## Migrate those ingress controllers first
 
 #### Beware when draining nodes!
 
-
+Note: Today I want to talk about a traffic outage we had in our infrastructure cluster a few weeks ago.
 ----
 
 ## Marcel D. Juhnke
 
 #### SRE @ karrieretutor.de
 
+Note: My name is Marcel Juhnke and I'm currently working as SRE @karrieretutor.de, where I am, together with a colleague, responsible for our cloud infrastructure. karriere tutor is a startup in the German e-learning market that specializes on learning partnerships with our national unemployment agency.
 ---
 
-### Easy migrations & failover
+#### Kubernetes gives us easy migrations & failovers
 
-# Yeah!
+We mostly have come to expect this as a simple fact
 
 ----
 
-#### Scheduler 
-controls Pod placement
+### But what if the migration goes wrong?
+
+---
+
+## Today's protagonists
 
 #### Node drain 
 * moves Pods from the drained nodes to healthy ones
 * good for planned maintanence work (replacing/upgrading nodes)
 
+#### Services/kube-proxy
+* make sure that Pods are reachable no matter which node they run on.
+
 ---
-
-### What if the migration goes wrong?
-
-----
 
 #### before
 
 <img src="images/nodedrain-before.svg" height="500px" />
 
+Note: This is the initial situation from where we started. We had a node pool that we needed to recreate in GKE.
 ----
 #### added second node pool
 
 <img src="images/nodedrain-secondpool.svg" height="500px" />
 
+Note: For this, we created a second node pool where we then wanted to simply migrate all workloads over to and kill off the old nodes.
 ----
 #### `kubectl drain`
 
 <img src="images/nodedrain-after_blown.svg" height="500px" /> 
 <div class="what">???</div>
 
+Note: So, blindly trusting our positive experiences from the past, we did a kubectl drain on ALL of the old nodes at once. We didn't really expect what we ended up with.
 ----
-No more traffic reached the ingress-nginx Pods
+ingress-nginx Pods were still running on the old nodes
+
+no traffic was redirected to them anymore
+
+-> This shouldn't happen, right?
 
 ---
-After `kubectl drain` cordoned the old nodes, the Kubernetes Service Controller
+
+So let's see how the story unfolded
+
+----
+
+After `kubectl drain` cordoned the old nodes, they went to a `NotReady` state.
+
+The Kubernetes Service Controller in turn
 
 * added the new nodes to the GCP Load Balancer backend config
 * removed the old node from the GCP Load Balancer backend config
 
 Nodes that are not `Ready` get removed from the Load Balancer config
 
+Note: so when you tell a node to be drained, it automatically get's cordoned, too. That means, it won't accept any new Pods to be scheduled on it and moves to a NotReady state. When a node is not ready, the Kubernetes Service Controller
 ----
 
 ```go
@@ -86,7 +111,7 @@ https://github.com/kubernetes/kubernetes/blob/00eab3c40bcda9ee73eac060242d36602e
 </p>
 
 
-
+Note: This shows the place in the service controller's source code where it decides which nodes should be part of a cloud LB's backend config.
 ----
 #### ingress-nginx still running on old nodes
 
@@ -99,25 +124,21 @@ Kubernetes will respect the PodDisruptionBudget and ensure that only one pod is 
 https://kubernetes.io/docs/tasks/administer-cluster/safely-drain-node/#draining-multiple-nodes-in-parallel
 </p>
 
+Note: The next situation that we faced were that the ingress-nginx Pods didn't get moved off the old nodes. We later found that this was due to Pod disruption budgets that were configured on a Deployment. We didn't configure this ourselves, as we didn't care about at that time; it was simply a default value in a Helm chart we used.
 ----
 
-However, this shouldn't be a problem.
-
-----
-# But still
-
-No more traffic reached the ingress-nginx Pods
-
----
-### `kube-proxy`
-
-This is what normally happens:
+In that case, we'd normally expect this:
 
 <img src="images/nodedrain-kube-proxy.svg" height="500px" />
 
 Note: kube-proxy transparently forwards service traffic to the correct node(s) where the Pods are running.
+
 ----
-However, it didn't in our case.
+## However, this was not the case
+
+
+No more traffic reached the ingress-nginx Pods
+
 
 ---
 # But why not?
@@ -139,6 +160,7 @@ spec:
   type: LoadBalancer
 ```
 
+Note: Let's have a look at the Service definition that comes with the deployment manifests of ingress-nginx. We notice the externalTrafficPolicy in there
 ----
 externalTrafficPolicy
 
@@ -160,11 +182,14 @@ Which leads to this situation
 
 <img src="images/nodedrain-secondpool_healthz.svg" height="500px" /> 
 
+Note: which leads to this situation after we added the second node pool
+
 ----
 And after cordoning the nodes to this
 
 <img src="images/nodedrain-after_blown_healthz.svg" height="500px" /> 
 
+Note: And to this after the old nodes were set to NotReady after being cordoned
 ---
 
 ### Obvious solution
@@ -193,3 +218,5 @@ They get automatically recreated on the `Ready` nodes:
 ---
 
 ## Thank you for your time!
+
+Note: I'm happy to answer any questions.

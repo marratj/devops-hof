@@ -175,7 +175,8 @@
    padding: 5px;
    overflow: auto;
    max-height: 400px;
-   word-wrap: normal; }
+   word-wrap: normal;
+  font-size: 66% !important; }
  
  .reveal table {
    margin: auto;
