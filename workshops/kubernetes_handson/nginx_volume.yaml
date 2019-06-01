@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx
+  name: nginx2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx
+    spec:
+      volumes:
+        - name: configfile
+          configMap:
+            name: nginx
+        - name: pvc
+          persistentVolumeClaim:
+            claimName: nginxpvc
+      containers:
+      - image: nginx:1.15.0
+        name: nginx
+        resources: {}
+        volumeMounts:
+          - name: configfile
+            mountPath: /etc/configfile
+          - name: pvc
+            mountPath: /data
+status: {}
