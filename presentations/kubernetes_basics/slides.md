@@ -11,7 +11,7 @@ revealOptions:
 
 ## Marcel D. Juhnke
 
-#### SRE @ karrieretutor.de
+#### SRE @ GfK
 
 ---
 ## What is Kubernetes?
